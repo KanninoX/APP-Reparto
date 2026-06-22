@@ -12,7 +12,7 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import api from '../services/api';
 
 interface RutaPedido { pedido: { id: number; direccionEntrega: string; estado: string; cliente: { nombre: string } }; ordenEntrega: number; }
-interface Ruta { id: number; nombre: string; fecha: string; rutaPedidos: RutaPedido[]; vehiculo: { id: number } }
+interface Ruta { id: number; nombre: string; fecha: string; rutaPedidos: RutaPedido[]; vehiculo: { id: number }; usuario: { id: number } }
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Main'>; };
 
@@ -21,24 +21,25 @@ export default function MiRutaScreen({ navigation }: Props) {
   const [loading, setLoading] = useState(true);
   const stompRef = useRef<Client | null>(null);
 
-  useEffect(() => {
+  const cargarRuta = () =>
     api.get('/rutas/mi-ruta')
       .then((r) => setRuta(r.data.data))
       .catch(() => Alert.alert('Info', 'No tienes ruta activa por el momento'))
       .finally(() => setLoading(false));
-  }, []);
 
-  // Inicia el tracking GPS cuando se tiene la ruta
+  useEffect(() => { cargarRuta(); }, []);
+
   useEffect(() => {
     if (!ruta) return;
     let watchId: number;
 
-    const iniciarTracking = async () => {
+    const iniciarWS = async () => {
       const token = await AsyncStorage.getItem('token');
       const client = new Client({
         webSocketFactory: () => new SockJS('http://10.0.2.2:8080/ws'),
         connectHeaders: { Authorization: `Bearer ${token}` },
         onConnect: () => {
+          // Tracking GPS
           watchId = Geolocation.watchPosition(
             ({ coords }) => {
               client.publish({
@@ -54,18 +55,25 @@ export default function MiRutaScreen({ navigation }: Props) {
             undefined,
             { interval: 10000, distanceFilter: 10 }
           );
+
+          // Suscripción a cambios de ruta en tiempo real (HU2)
+          client.subscribe(`/topic/ruta/${ruta.usuario.id}`, (msg) => {
+            const rutaActualizada: Ruta = JSON.parse(msg.body);
+            setRuta(rutaActualizada);
+            Alert.alert('Ruta actualizada', 'El ejecutivo agregó un nuevo pedido a tu ruta.');
+          });
         },
       });
       client.activate();
       stompRef.current = client;
     };
 
-    iniciarTracking();
+    iniciarWS();
     return () => {
       Geolocation.clearWatch(watchId);
       stompRef.current?.deactivate();
     };
-  }, [ruta]);
+  }, [ruta?.id]);
 
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
   if (!ruta) return <View style={styles.empty}><Text>Sin ruta activa</Text></View>;
@@ -75,7 +83,7 @@ export default function MiRutaScreen({ navigation }: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{ruta.nombre}</Text>
-      <Text style={styles.fecha}>Fecha: {ruta.fecha}</Text>
+      <Text style={styles.fecha}>Fecha: {ruta.fecha} · {pedidosOrdenados.length} paradas</Text>
       <FlatList
         data={pedidosOrdenados}
         keyExtractor={(item) => String(item.pedido.id)}

@@ -63,7 +63,9 @@ CREATE TABLE pedidos (
     estado            estado_pedido   NOT NULL DEFAULT 'PENDIENTE',
     direccion_entrega VARCHAR(255)    NOT NULL,
     prioridad         VARCHAR(10)     NOT NULL DEFAULT 'NORMAL',
-    observaciones     VARCHAR(500)
+    observaciones     VARCHAR(500),
+    motivo_rechazo    VARCHAR(255),
+    reagendar         BOOLEAN         NOT NULL DEFAULT FALSE
 );
 
 CREATE INDEX idx_pedidos_estado    ON pedidos(estado);
@@ -144,3 +146,18 @@ CREATE TABLE notificaciones (
 );
 
 CREATE INDEX idx_notif_usuario_leida ON notificaciones(usuario_id, leida);
+
+-- =========================================================
+-- DISPOSITIVOS MÓVILES (HU3)
+-- =========================================================
+CREATE TABLE dispositivos (
+    id          BIGSERIAL PRIMARY KEY,
+    device_id   VARCHAR(255) NOT NULL,
+    usuario_id  BIGINT       NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    autorizado  BOOLEAN      NOT NULL DEFAULT FALSE,
+    creado_en   TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    UNIQUE (device_id, usuario_id)
+);
+
+CREATE INDEX idx_dispositivos_usuario ON dispositivos(usuario_id);
+CREATE INDEX idx_dispositivos_pendientes ON dispositivos(autorizado) WHERE autorizado = FALSE;

@@ -58,6 +58,13 @@ public class Pedido {
     @Column(length = 500)
     private String observaciones;
 
+    @Column(name = "motivo_rechazo", length = 255)
+    private String motivoRechazo;
+
+    @Column
+    @Builder.Default
+    private boolean reagendar = false;
+
     public enum Estado {
         PENDIENTE, ASIGNADO, EN_RUTA, ENTREGADO, RECHAZADO, REAGENDADO
     }

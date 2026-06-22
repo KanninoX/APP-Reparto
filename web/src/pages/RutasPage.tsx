@@ -153,7 +153,7 @@ export default function RutasPage() {
                   <span>{ruta.rutaPedidos.length} pedidos</span>
                 </div>
               </div>
-              {ruta.estado === 'PLANEADA' && (
+              {(ruta.estado === 'PLANEADA' || ruta.estado === 'EN_CURSO') && (
                 <button onClick={e => { e.stopPropagation(); setRutaSeleccionada(ruta); }}
                   className="mt-3 w-full flex items-center justify-center gap-1 py-1.5 text-[11px] font-semibold text-[#0051d5] border border-[#0051d5] rounded-lg hover:bg-[#0051d5] hover:text-white transition-colors">
                   <span className="material-symbols-outlined text-[14px]">add</span>

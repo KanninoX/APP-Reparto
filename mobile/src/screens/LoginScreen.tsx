@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
   StyleSheet, Alert, ActivityIndicator, KeyboardAvoidingView, Platform
@@ -10,21 +10,44 @@ import api from '../services/api';
 
 type Props = { navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>; };
 
+// Genera un UUID v4 simple para identificar el dispositivo
+function uuidv4(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = Math.random() * 16 | 0;
+    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+}
+
 export default function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [deviceId, setDeviceId] = useState('');
+
+  useEffect(() => {
+    AsyncStorage.getItem('deviceId').then((stored) => {
+      if (stored) { setDeviceId(stored); return; }
+      const nuevo = uuidv4();
+      AsyncStorage.setItem('deviceId', nuevo);
+      setDeviceId(nuevo);
+    });
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) { Alert.alert('Error', 'Ingrese email y contraseña'); return; }
     setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email, password });
+      const res = await api.post('/auth/login', { email, password, deviceId });
       const { token } = res.data.data;
       await AsyncStorage.setItem('token', token);
       navigation.replace('Main');
-    } catch {
-      Alert.alert('Error', 'Credenciales incorrectas');
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message;
+      if (msg?.includes('Dispositivo')) {
+        Alert.alert('Acceso bloqueado', msg);
+      } else {
+        Alert.alert('Error', 'Credenciales incorrectas');
+      }
     } finally {
       setLoading(false);
     }

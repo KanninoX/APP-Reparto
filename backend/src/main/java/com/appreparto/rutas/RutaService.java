@@ -4,6 +4,7 @@ import com.appreparto.common.exception.ResourceNotFoundException;
 import com.appreparto.pedidos.Pedido;
 import com.appreparto.pedidos.PedidoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ public class RutaService {
 
     private final RutaRepository rutaRepository;
     private final PedidoService pedidoService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public List<Ruta> listarTodas() {
         return rutaRepository.findAll();
@@ -57,6 +59,12 @@ public class RutaService {
                 .build();
         ruta.getRutaPedidos().add(rutaPedido);
         pedidoService.cambiarEstado(pedidoId, Pedido.Estado.ASIGNADO);
-        return rutaRepository.save(ruta);
+        Ruta guardada = rutaRepository.save(ruta);
+        // Notificar al operario en tiempo real si la ruta ya está en curso
+        if (ruta.getEstado() == Ruta.Estado.EN_CURSO) {
+            messagingTemplate.convertAndSend(
+                    "/topic/ruta/" + ruta.getUsuario().getId(), guardada);
+        }
+        return guardada;
     }
 }

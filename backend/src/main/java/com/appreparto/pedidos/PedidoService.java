@@ -38,8 +38,15 @@ public class PedidoService {
 
     @Transactional
     public Pedido cambiarEstado(Long id, Pedido.Estado nuevoEstado) {
+        return cambiarEstado(id, nuevoEstado, null, false);
+    }
+
+    @Transactional
+    public Pedido cambiarEstado(Long id, Pedido.Estado nuevoEstado, String motivoRechazo, boolean reagendar) {
         Pedido pedido = buscarPorId(id);
         pedido.setEstado(nuevoEstado);
+        if (motivoRechazo != null) pedido.setMotivoRechazo(motivoRechazo);
+        pedido.setReagendar(reagendar);
         Pedido guardado = pedidoRepository.save(pedido);
         eventPublisher.publishEvent(new PedidoEstadoCambiadoEvent(this, guardado));
         return guardado;

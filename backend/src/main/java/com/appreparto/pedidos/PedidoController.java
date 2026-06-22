@@ -43,7 +43,10 @@ public class PedidoController {
     @PreAuthorize("hasAnyRole('EJECUTIVO','ADMIN','OPERARIO')")
     public ResponseEntity<ApiResponse<Pedido>> cambiarEstado(
             @PathVariable Long id,
-            @RequestParam Pedido.Estado estado) {
-        return ResponseEntity.ok(ApiResponse.ok(pedidoService.cambiarEstado(id, estado)));
+            @RequestParam Pedido.Estado estado,
+            @RequestParam(required = false) String motivoRechazo,
+            @RequestParam(required = false, defaultValue = "false") boolean reagendar) {
+        return ResponseEntity.ok(ApiResponse.ok(
+                pedidoService.cambiarEstado(id, estado, motivoRechazo, reagendar)));
     }
 }
