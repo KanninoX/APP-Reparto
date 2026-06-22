@@ -36,7 +36,7 @@ export default function MiRutaScreen({ navigation }: Props) {
     const iniciarWS = async () => {
       const token = await AsyncStorage.getItem('token');
       const client = new Client({
-        webSocketFactory: () => new SockJS('http://10.0.2.2:8080/ws'),
+        webSocketFactory: () => new SockJS('http://54.174.112.172/ws'),
         connectHeaders: { Authorization: `Bearer ${token}` },
         onConnect: () => {
           // Tracking GPS
