@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Hand base -->
+  <path d="M15 72 Q20 85 35 88 L72 88 Q82 88 86 78 L90 62 Q92 56 86 54 L70 52"
+        stroke="#00255a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M25 72 L70 72"
+        stroke="#00255a" stroke-width="4" stroke-linecap="round"/>
+  <!-- Fingers -->
+  <path d="M25 72 Q22 65 28 62 L70 52 Q76 50 76 56 L76 72"
+        stroke="#00255a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Box body -->
+  <rect x="28" y="28" width="44" height="38" rx="3"
+        fill="#316bf3" stroke="#00255a" stroke-width="2"/>
+
+  <!-- Box lid / top fold lines -->
+  <path d="M28 36 L72 36" stroke="#00255a" stroke-width="2"/>
+  <path d="M50 28 L50 36" stroke="#00255a" stroke-width="2"/>
+
+  <!-- Box tape / ribbon center -->
+  <rect x="46" y="28" width="8" height="38" rx="1"
+        fill="#0f3b7e" opacity="0.5"/>
+
+  <!-- Speed lines (left) -->
+  <path d="M18 38 L26 38" stroke="#316bf3" stroke-width="3" stroke-linecap="round"/>
+  <path d="M14 46 L26 46" stroke="#316bf3" stroke-width="3" stroke-linecap="round"/>
+  <path d="M20 54 L26 54" stroke="#316bf3" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Location pin on top of box -->
+  <circle cx="66" cy="22" r="8" fill="#20bf86"/>
+  <path d="M66 30 L66 38" stroke="#20bf86" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="66" cy="22" r="3" fill="white"/>
+</svg>

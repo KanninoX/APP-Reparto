@@ -1,0 +1,44 @@
+# ========== Java / Maven ===========
+backend/target/
+backend/*.class
+backend/.mvn/wrapper/maven-wrapper.jar
+*.jar
+*.war
+*.ear
+.classpath
+.project
+.settings/
+
+# ========== Node / React ===========
+web/node_modules/
+web/dist/
+web/.env
+web/.env.local
+
+mobile/node_modules/
+mobile/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/ios/build/
+mobile/ios/Pods/
+mobile/.env
+
+# ========== Credenciales AWS ===========
+*.pem
+*.key
+application-prod.properties
+application-local.properties
+
+# ========== IDEs ===========
+.idea/
+*.iml
+.vscode/
+*.swp
+
+# ========== Sistema ===========
+.DS_Store
+Thumbs.db
+*.log
+
+# ========== Docker ===========
+postgres_data/
