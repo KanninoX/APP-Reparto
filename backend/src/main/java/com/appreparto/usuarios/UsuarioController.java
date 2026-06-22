@@ -4,6 +4,7 @@ import com.appreparto.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,6 +15,11 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<Usuario>> me(@AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(ApiResponse.ok(usuario));
+    }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")

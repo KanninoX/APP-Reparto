@@ -25,6 +25,10 @@ public class PedidoService {
         return pedidoRepository.findByEstado(estado);
     }
 
+    public List<Pedido> listarPorUsuario(Long usuarioId) {
+        return pedidoRepository.findByUsuarioId(usuarioId);
+    }
+
     public Pedido buscarPorId(Long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido", id));

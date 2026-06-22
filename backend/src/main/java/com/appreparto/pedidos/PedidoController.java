@@ -1,10 +1,12 @@
 package com.appreparto.pedidos;
 
 import com.appreparto.common.dto.ApiResponse;
+import com.appreparto.usuarios.Usuario;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +17,12 @@ import java.util.List;
 public class PedidoController {
 
     private final PedidoService pedidoService;
+
+    @GetMapping("/mis-pedidos")
+    @PreAuthorize("hasRole('OPERARIO')")
+    public ResponseEntity<ApiResponse<List<Pedido>>> misPedidos(@AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(ApiResponse.ok(pedidoService.listarPorUsuario(usuario.getId())));
+    }
 
     @GetMapping
     @PreAuthorize("hasAnyRole('EJECUTIVO','ADMIN')")
